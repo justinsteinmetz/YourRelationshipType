@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Relationship Type</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Permanent+Marker&family=Figtree:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: torn-paper collage. Loud flat colour, hard shadows, tilted stickers, solid cards so text always sits on a calm surface. */
+  --paper:#F3EEE3;
+  --ink:#15121A;
+  --pink:#FF3D9A;
+  --lime:#C6F432;
+  --blue:#2B4DFF;
+  --sun:#FFD21F;
+  --orange:#FF6A2B;
+  --lilac:#B9A4FF;
+  --white:#FFFFFF;
+  --display:'Rubik Mono One','Arial Black',Impact,sans-serif;
+  --scrawl:'Permanent Marker','Marker Felt',cursive;
+  --body:'Figtree','Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(rgba(21,18,26,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(21,18,26,.06) 1px,transparent 1px);
+  background-size:32px 32px;
+  color:var(--ink);
+  font-family:var(--body);
+  font-weight:500;
+  font-size:19px;
+  line-height:1.4;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+
+/* ---------- collage background ---------- */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg>*{position:absolute}
+.b-circle{width:min(34vw,320px);aspect-ratio:1;border-radius:50%;background:var(--pink);border:4px solid var(--ink);left:-7%;top:-6%}
+.b-burst{width:min(30vw,280px);aspect-ratio:1;background:var(--lime);right:-5%;top:14%;transform:rotate(14deg)}
+.b-halftone{width:min(30vw,300px);aspect-ratio:1;left:-3%;bottom:-4%;border:4px solid var(--ink);background-color:var(--sun);background-image:radial-gradient(var(--ink) 28%,transparent 30%);background-size:18px 18px;transform:rotate(-8deg)}
+.b-tape{width:150px;height:38px;background:rgba(255,210,31,.85);border:2px solid var(--ink);right:10%;bottom:9%;transform:rotate(-24deg)}
+.b-tape.t2{background:rgba(185,164,255,.9);left:46%;top:-10px;transform:rotate(7deg);right:auto;bottom:auto}
+.b-blob{width:min(26vw,240px);aspect-ratio:1.2;background:var(--blue);border:4px solid var(--ink);border-radius:62% 38% 55% 45% / 45% 58% 42% 55%;right:-6%;bottom:-6%}
+.b-scrawl{font-family:var(--scrawl);font-size:44px;color:var(--orange);right:6%;top:4%;transform:rotate(9deg)}
+
+/* ---------- shell ---------- */
+#app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:18px 20px 44px;min-height:100%}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.step{font-family:var(--display);font-size:12px;letter-spacing:.04em;padding:7px 12px;border:3px solid var(--ink);border-radius:999px;background:var(--white);opacity:.55}
+.step.on{background:var(--ink);color:var(--paper);opacity:1}
+.step.done{background:var(--lime);opacity:1}
+
+.card{background:var(--white);border:4px solid var(--ink);border-radius:18px;box-shadow:8px 8px 0 var(--ink);padding:22px 24px}
+.card.y{background:var(--sun)}
+.card.p{background:var(--pink)}
+.card.l{background:var(--lime)}
+.card.b{background:var(--blue);color:var(--white)}
+.tilt-l{transform:rotate(-1.6deg)}
+.tilt-r{transform:rotate(1.3deg)}
+
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.05;margin:0;text-wrap:balance;text-transform:uppercase}
+h1{font-size:clamp(34px,7vw,68px)}
+h2{font-size:clamp(24px,4.4vw,40px)}
+h3{font-size:20px}
+p{margin:0}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:64px;padding:12px 30px;border:4px solid var(--ink);border-radius:16px;
+  background:var(--ink);color:var(--paper);font-family:var(--display);font-size:20px;text-transform:uppercase;
+  box-shadow:6px 6px 0 var(--pink);transition:transform .12s;
+}
+.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--pink)}
+.btn.alt{background:var(--lime);color:var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.btn.alt:active{box-shadow:2px 2px 0 var(--ink)}
+.btn.small{min-height:48px;font-size:15px;padding:8px 18px}
+
+/* ---------- intro ---------- */
+.intro{display:grid;gap:26px;margin-top:6px}
+.intro .title{position:relative;padding:30px 28px 34px}
+.intro .title .scrawl{font-family:var(--scrawl);font-size:30px;color:var(--pink);display:block;margin-bottom:12px;transform:rotate(-2deg)}
+.intro .rules{display:flex;gap:16px;flex-wrap:wrap}
+.intro .rules .card{flex:1 1 220px;padding:16px 18px;font-weight:700}
+.note-card{background:var(--white);transform:rotate(-.6deg);font-weight:700}
+.note-card .note{color:var(--pink);margin-right:8px}
+.tag{display:inline-block;font-family:var(--display);font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);border-radius:999px;padding:4px 12px;margin-right:10px;vertical-align:middle}
+.challenge{display:block;margin-top:10px;font-family:var(--scrawl);font-size:24px;font-weight:400;color:var(--blue)}
+.rules .n{font-family:var(--display);font-size:30px;display:block;margin-bottom:4px}
+
+/* ---------- quiz ---------- */
+.bar{display:flex;gap:8px;margin-bottom:22px}
+.bar i{flex:1;height:16px;border:3px solid var(--ink);border-radius:8px;background:var(--white)}
+.bar i.f{background:var(--pink)}
+.bar i.c{background:var(--sun)}
+.qhead{display:flex;gap:18px;align-items:center;margin-bottom:24px}
+.num{flex:0 0 auto;width:104px;height:104px;background:var(--lime);display:grid;place-items:center;font-family:var(--display);font-size:34px;transform:rotate(-10deg)}
+.qtext{flex:1}
+.qtext h2{font-size:clamp(22px,3.8vw,34px);text-transform:none;line-height:1.15}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:20px}
+.opt{
+  text-align:left;border:4px solid var(--ink);border-radius:16px;padding:18px 20px;min-height:104px;
+  font-weight:700;font-size:19px;line-height:1.3;box-shadow:6px 6px 0 var(--ink);
+  transition:transform .12s;background:var(--white);
+}
+.opt:nth-child(4n+1){background:var(--pink);transform:rotate(-1deg)}
+.opt:nth-child(4n+2){background:var(--lime);transform:rotate(.9deg)}
+.opt:nth-child(4n+3){background:var(--sun);transform:rotate(.6deg)}
+.opt:nth-child(4n+4){background:var(--lilac);transform:rotate(-.8deg)}
+.opt:active,.opt.pick{transform:translate(4px,4px) rotate(0);box-shadow:2px 2px 0 var(--ink)}
+.opt.pick{background:var(--ink);color:var(--paper)}
+.opt b{font-weight:800;text-decoration:underline wavy var(--blue) 2px;text-underline-offset:4px}
+.opt.pick b{text-decoration-color:var(--lime)}
+
+/* ---------- result ---------- */
+.result{display:grid;gap:26px}
+.reveal{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.stamp{width:150px;height:150px;background:var(--pink);display:grid;place-items:center;font-family:var(--display);font-size:30px;transform:rotate(8deg)}
+.reveal .kicker{font-family:var(--scrawl);font-size:28px;color:var(--blue);transform:rotate(-2deg);display:block;margin-bottom:6px}
+.reveal p{font-size:21px;font-weight:700;margin-top:10px}
+.chips{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.chip{border:3px solid var(--ink);border-radius:999px;padding:8px 18px;font-weight:800;background:var(--white);box-shadow:4px 4px 0 var(--ink)}
+.chip:nth-child(3n+1){background:var(--lime);transform:rotate(-2deg)}
+.chip:nth-child(3n+2){background:var(--pink);transform:rotate(1.5deg)}
+.chip:nth-child(3n+3){background:var(--lilac);transform:rotate(-1deg)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px}
+.mix .row{display:grid;grid-template-columns:150px 1fr 48px;gap:12px;align-items:center;margin-top:10px;font-weight:800}
+.mix .track{height:24px;border:3px solid var(--ink);border-radius:12px;background:var(--white);overflow:hidden}
+.mix .fill{height:100%;background:var(--pink);border-right:3px solid var(--ink)}
+.mix .row.top .fill{background:var(--blue)}
+.note{font-family:var(--scrawl);font-size:24px;line-height:1.25}
+
+/* ---------- flags ---------- */
+.flagwrap{display:grid;gap:24px;max-width:760px;margin:0 auto}
+.flagcard{min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:12px;text-align:center;font-size:clamp(22px,3.6vw,30px);font-weight:800;line-height:1.25}
+.flagcard small{font-family:var(--scrawl);font-size:24px;color:var(--blue);font-weight:400}
+.flagbtns{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.flagbtns .btn{min-height:84px;font-size:22px;box-shadow:6px 6px 0 var(--ink)}
+.btn.red{background:#FF2F3F;color:var(--white)}
+.btn.green{background:#17C964;color:var(--ink)}
+.feedback{min-height:92px;font-weight:700}
+.feedback.card{min-height:150px}
+.feedback .verdict{font-family:var(--display);font-size:22px;display:block;margin-bottom:4px}
+.feedback .good{color:#0B7A3B}
+.feedback .bad{color:#C4122A}
+.score{font-family:var(--display);font-size:clamp(40px,10vw,90px);line-height:1}
+
+/* ---------- talk ---------- */
+.talk{display:grid;gap:26px}
+.prompts{display:grid;gap:22px}
+.prompt{display:grid;grid-template-columns:72px 1fr;gap:18px;align-items:start}
+.prompt .pn{width:64px;height:64px;display:grid;place-items:center;font-family:var(--display);font-size:28px;background:var(--lime);border:4px solid var(--ink);border-radius:50%}
+.prompt:nth-child(2) .pn{background:var(--pink)}
+.prompt:nth-child(3) .pn{background:var(--sun)}
+.prompt h3{text-transform:none;font-family:var(--body);font-weight:800;font-size:22px;line-height:1.25;margin-bottom:10px}
+.starters{display:flex;gap:10px;flex-wrap:wrap}
+.starters span{font-family:var(--scrawl);font-size:21px;background:var(--paper);border:3px dashed var(--ink);border-radius:10px;padding:4px 12px}
+.timer{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:space-between}
+.clock{font-family:var(--display);font-size:clamp(48px,11vw,96px);line-height:1;font-variant-numeric:tabular-nums}
+.bank{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.word{border:3px solid var(--ink);border-radius:12px;padding:10px 14px;background:var(--white);box-shadow:4px 4px 0 var(--ink)}
+.word:nth-child(5n+1){background:var(--lime)}
+.word:nth-child(5n+3){background:var(--sun)}
+.word:nth-child(5n+4){background:var(--lilac)}
+.word strong{display:block;font-weight:800;font-size:19px}
+.word span{font-size:16px;font-weight:600}
+
+.nav{display:flex;justify-content:flex-end;margin-top:30px;gap:16px;flex-wrap:wrap}
+
+@media (max-width:640px){
+  body{font-size:17px}
+  .reveal{grid-template-columns:1fr}
+  .stamp{width:110px;height:110px;font-size:21px}
+  .num{width:76px;height:76px;font-size:26px}
+  .mix .row{grid-template-columns:110px 1fr 42px}
+  .prompt{grid-template-columns:1fr}
+  .flagbtns{grid-template-columns:1fr}
+}
+
+/* ---------- motion system ----------
+   Entrances animate only the individual properties scale / translate / rotate and opacity,
+   so the collage rotations set through transform stay exactly as designed.
+   Fill-mode is "backwards": once an animation ends the element returns to its normal styles. */
+.a{animation:var(--an,slap) var(--dur,.28s) cubic-bezier(.2,.8,.2,1) var(--d,0ms) backwards}
+@keyframes slap{0%{opacity:0;scale:1.14;translate:0 -8px}60%{opacity:1;scale:.97;translate:0 1px}100%{opacity:1;scale:1;translate:0 0}}
+@keyframes slapbig{0%{opacity:0;scale:.82}55%{opacity:1;scale:1.06}80%{scale:.99}100%{opacity:1;scale:1}}
+@keyframes slide{0%{opacity:0;translate:-26px 0}100%{opacity:1;translate:0 0}}
+@keyframes rise{0%{opacity:0;translate:0 14px}100%{opacity:1;translate:0 0}}
+@keyframes numpop{0%{opacity:0;scale:.3}60%{opacity:1;scale:1.18}100%{opacity:1;scale:1}}
+@keyframes grow{0%{scale:0 1}100%{scale:1 1}}
+@keyframes fbin{0%{opacity:0;translate:0 18px;scale:.96}60%{opacity:1;translate:0 -2px;scale:1.01}100%{opacity:1;translate:0 0;scale:1}}
+/* stamp variants: same system, different character per type */
+@keyframes stamp{0%{opacity:0;scale:2.3;rotate:-14deg}55%{opacity:1;scale:.88;rotate:2deg}75%{scale:1.05;rotate:-1deg}100%{opacity:1;scale:1;rotate:0deg}}
+@keyframes stampMain{0%{opacity:0;scale:3.2;rotate:-24deg}50%{opacity:1;scale:.8;rotate:4deg}70%{scale:1.12;rotate:-2deg}85%{scale:.97}100%{opacity:1;scale:1;rotate:0deg}}
+@keyframes stampObs{0%{opacity:0;scale:1.5;rotate:-4deg}70%{opacity:1;scale:.97}100%{opacity:1;scale:1;rotate:0deg}}
+@keyframes stampGhost{0%{opacity:0;scale:1.15;translate:0 -18px}100%{opacity:1;scale:1;translate:0 0}}
+@keyframes thud{0%,100%{translate:0 0}40%{translate:0 3px}}
+@keyframes squash{0%{scale:1 1}30%{scale:1.07 .9}60%{scale:.96 1.04}100%{scale:1 1}}
+@keyframes ring{0%{opacity:.9;scale:.94}100%{opacity:0;scale:1.12}}
+@keyframes shake{0%,100%{translate:0 0}20%{translate:-7px 0}40%{translate:6px 0}60%{translate:-4px 0}80%{translate:2px 0}}
+@keyframes bounce{0%{translate:0 0;scale:1}35%{translate:0 -8px;scale:1.03}65%{translate:0 1px;scale:.99}100%{translate:0 0;scale:1}}
+@keyframes pulse{0%{scale:1}40%{scale:1.07}100%{scale:1}}
+@keyframes rmfade{from{opacity:0}to{opacity:1}}
+
+/* quiz answer feedback */
+.opt{position:relative}
+.opt::after{content:"";position:absolute;inset:-6px;border:4px solid var(--ink);border-radius:20px;opacity:0;pointer-events:none}
+.opt.pick{animation:squash .3s ease-out}
+.opt.pick::after{animation:ring .34s ease-out}
+.opts.locked .opt:not(.pick){opacity:.35;transition:opacity .18s}
+/* progress bar: pink sweep inside each block */
+.bar i{position:relative;overflow:hidden;transition:background-color .2s}
+.bar i::before{content:"";position:absolute;inset:0;background:var(--pink);transform:scaleX(0);transform-origin:left center;transition:transform .3s ease-out}
+.bar i.f{background:var(--sun)}
+.bar i.f::before{transform:scaleX(1)}
+/* results */
+.thud{animation:thud .16s ease-out var(--td,400ms)}
+.fill{transform-origin:left center}
+/* flags: the motion follows the item's category, not whether the answer was right */
+.flagcard.shake{animation:shake .36s ease-out}
+.flagcard.bounce{animation:bounce .36s ease-out}
+/* timer */
+.clock.pulse{animation:pulse .3s ease-out}
+
+@media (prefers-reduced-motion:reduce){
+  .a{animation:rmfade .15s linear backwards !important;animation-delay:0ms !important}
+  .opt.pick,.opt.pick::after,.thud,.clock.pulse,.flagcard.shake,.flagcard.bounce{animation:none !important}
+  .opts.locked .opt:not(.pick),.bar i,.bar i::before,.btn,.opt{transition:none !important}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <div class="b-circle"></div>
+  <div class="b-burst" id="burst"></div>
+  <div class="b-halftone"></div>
+  <div class="b-blob"></div>
+  <div class="b-tape"></div>
+  <div class="b-tape t2"></div>
+</div>
+<div id="app"></div>
+
+<script>
+(function(){
+  /* ---------- helpers ---------- */
+  function burstPoly(points, inner){
+    var out=[], n=points*2;
+    for(var i=0;i<n;i++){
+      var a=Math.PI*2*i/n - Math.PI/2, r=(i%2?inner:50);
+      out.push((50+r*Math.cos(a)).toFixed(1)+'% '+(50+r*Math.sin(a)).toFixed(1)+'%');
+    }
+    return 'polygon('+out.join(',')+')';
+  }
+  var BURST=burstPoly(14,36);
+  document.getElementById('burst').style.clipPath=BURST;
+
+  function el(html){var d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+  /* ---------- content ---------- */
+  var TYPES={
+    glue:{name:'The Glue',stamp:'GLUE',
+      line:'You hold the group together. You say the awkward thing out loud, show up, and sort it out before it gets weird.',
+      phrases:['patch things up','make an effort','stand up for'],
+      watch:'Watch out: you can end up doing all the emotional work while everyone else just enjoys the group.'},
+    ghost:{name:'The Ghost',stamp:'BOO',
+      line:'When it gets awkward, you disappear. Peaceful for you, confusing for everyone else.',
+      phrases:['drift apart','ghost someone','bottle things up'],
+      watch:'Watch out: silence is also a message. People usually read it as "I don’t care".'},
+    main:{name:'The Main Character',stamp:'ME!',
+      line:'Big feelings, big gestures, big group-chat energy. People always know where they stand with you. Or think they do.',
+      phrases:['fall out','take it personally','be jealous of'],
+      watch:'Watch out: if every drama is a headline, people stop checking which ones are real.'},
+    obs:{name:'The Chill Observer',stamp:'HMM',
+      line:'You watch first, trust slowly and stay loyal for years. Hard to read, easy to rely on.',
+      phrases:['open up','rely on','keep your distance'],
+      watch:'Watch out: people can’t read your mind. Sometimes you have to say it.'}
+  };
+  var ORDER=['glue','ghost','main','obs'];
+
+  var QUESTIONS=[
+    {q:'Your best friend cancels on you for the third time in a row. You…',
+     o:{glue:'say it’s <b>letting you down</b> and ask what’s going on.',
+        ghost:'stop replying. If they won’t <b>make an effort</b>, why should you?',
+        main:'post a vague story with a sad song and wait for someone to ask.',
+        obs:'shrug and make other plans. You never <b>rely on</b> people too much anyway.'}},
+    {q:'Two friends <b>fall out</b> and both message you to pick a side. You…',
+     o:{glue:'get them in the same room and help them <b>patch things up</b>.',
+        ghost:'mute both chats until it blows over.',
+        main:'pick a side. Loudly. Screenshots are involved.',
+        obs:'listen to both, say nothing and <b>stay out of it</b>.'}},
+    {q:'Someone you like <b>leaves you on read</b> for two days. You…',
+     o:{glue:'send something light and normal. Maybe they’re just busy.',
+        ghost:'leave them on read too. Two can play at that.',
+        main:'reread the whole chat six times and ask three friends what it means.',
+        obs:'pretend you haven’t noticed. You don’t <b>take it personally</b>.'}},
+    {q:'You join a new group and don’t know anyone. You…',
+     o:{glue:'start chatting and look for what you <b>have in common</b>.',
+        ghost:'stay on your phone. Talking is optional.',
+        main:'make a big entrance. By lunch everyone knows your name.',
+        obs:'watch for a while, then pick one person to <b>get to know</b>.'}},
+    {q:'Your closest friend is moving to another country. You…',
+     o:{glue:'plan video calls and promise to <b>keep in touch</b>. And actually do it.',
+        ghost:'say goodbye, then slowly <b>drift apart</b>. It just happens.',
+        main:'organise a huge leaving party and cry in front of everyone.',
+        obs:'say you’ll miss them, once, quietly. Send a meme a week later.'}},
+    {q:'The person you’re seeing keeps asking where you are and who you’re with. You…',
+     o:{glue:'talk about it honestly. <b>Trust</b> has to go both ways.',
+        ghost:'reply later and later until they get the message.',
+        main:'post something dramatic about freedom. Problem solved.',
+        obs:'note it as a <b>red flag</b> and quietly watch what happens.'}},
+    {q:'You said something that <b>hurt</b> someone’s <b>feelings</b>. You…',
+     o:{glue:'<b>apologise</b> properly, face to face, and mean it.',
+        ghost:'hope they forget. Avoid them for a week.',
+        main:'explain at length why it wasn’t really your fault. You’re upset too.',
+        obs:'think about it for days, then send one short message.'}},
+    {q:'What do you want most from a close friend?',
+     o:{glue:'Someone who <b>stands up for</b> me and tells me the truth.',
+        ghost:'Someone who never makes things complicated.',
+        main:'Someone who is <b>there for</b> me instantly. Every time.',
+        obs:'Someone I can <b>open up to</b>. Eventually. In my own time.'}}
+  ];
+
+  var FLAGS=[
+    {t:'They stand up for you when other people talk behind your back.',g:true,
+     why:'That’s loyalty. Someone who <b>stands up for you</b> is worth keeping.'},
+    {t:'They go through your phone “just to check”.',g:false,
+     why:'No <b>trust</b>, no relationship. Checking is control, not care.'},
+    {t:'They stay in touch even when they’re busy.',g:true,
+     why:'They <b>make an effort</b>, so you don’t <b>drift apart</b>.'},
+    {t:'They only text you when they need something.',g:false,
+     why:'A one-way street. Some people <b>take</b> friends <b>for granted</b> like this.'},
+    {t:'They ghost you whenever things get awkward.',g:false,
+     why:'To <b>ghost</b> someone is to cut contact with no explanation. It leaves the other person guessing.'},
+    {t:'You can open up to them without being judged.',g:true,
+     why:'Being able to <b>open up</b> is one of the biggest signs of a healthy relationship.'},
+    {t:'They get jealous every time you hang out with other friends.',g:false,
+     why:'Feeling jealous is human. What matters is what you do with it: being <b>clingy</b> and controlling is a <b>red flag</b>.'},
+    {t:'After an argument, they apologise and mean it.',g:true,
+     why:'That’s how people <b>patch things up</b> after they <b>fall out</b>.'}
+  ];
+
+  var BANK=[
+    ['fall out (with someone)','stop being friends after an argument'],
+    ['patch things up','fix a relationship after a fight'],
+    ['drift apart','slowly stop being close'],
+    ['get on / get along with','have a good relationship with'],
+    ['keep in touch','stay in contact'],
+    ['let someone down','disappoint them'],
+    ['rely on','depend on; trust to be there'],
+    ['open up (to someone)','talk honestly about feelings'],
+    ['stand up for','defend'],
+    ['take someone for granted','not appreciate them'],
+    ['make an effort','try hard'],
+    ['have a lot in common','share interests'],
+    ['red flag','a warning sign'],
+    ['ghost someone','suddenly stop replying'],
+    ['bottle things up','keep feelings inside'],
+    ['take it personally','feel that something is aimed at you']
+  ];
+
+  var PROMPTS=[
+    {q:'Compare your results. Which parts describe a useful quality in a friend? Which parts might cause problems?',
+     s:['It’s useful to ___ because…','It could cause problems if…','You can rely on someone who…']},
+    {q:'A friend has let you down badly. Agree on what to do first, and why.',
+     s:['I’d make an effort to…','If it happened again, I’d…','You can’t rely on someone who…']},
+    {ext:true,q:'What is the biggest red flag in a friendship? And in a romantic relationship? Are they different?',
+     s:['For me, ___ is a red flag because…','It depends on…','I take it personally when…']}
+  ];
+
+  /* ---------- state ---------- */
+  var app=document.getElementById('app');
+  var S={screen:'intro',qi:0,tally:{glue:0,ghost:0,main:0,obs:0},history:[],order:[],fi:0,fscore:0,fanswered:null,secs:360,running:false};
+  var timerId=null;
+
+  function resetQuiz(){
+    S.qi=0;S.tally={glue:0,ghost:0,main:0,obs:0};S.history=[];
+    S.order=QUESTIONS.map(function(){return shuffle(ORDER)});
+  }
+  resetQuiz();
+
+  function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}S.running=false}
+
+  function steps(cur){
+    var names=['Quiz','Your type','Flags','Talk'];
+    var idx={intro:0,quiz:0,result:1,flags:2,talk:3}[cur];
+    return '<div class="steps">'+names.map(function(n,i){
+      return '<span class="step '+(i===idx?'on':(i<idx?'done':''))+'">'+(i+1)+' '+n+'</span>';
+    }).join('')+'</div>';
+  }
+
+  function winner(){
+    var max=Math.max.apply(null,ORDER.map(function(t){return S.tally[t]}));
+    var tied=ORDER.filter(function(t){return S.tally[t]===max});
+    if(tied.length===1) return tied[0];
+    for(var i=S.history.length-1;i>=0;i--){ if(tied.indexOf(S.history[i])>-1) return S.history[i]; }
+    return tied[0];
+  }
+
+  /* ---------- screens ---------- */
+  var advanceT=null, rafId=null;
+  /* [keyframes, duration (s), landing moment (ms): when the stamp hits the paper, so the title can follow it] */
+  var STAMP={glue:['stamp',.38,410],ghost:['stampGhost',.5,450],main:['stampMain',.36,380],obs:['stampObs',.45,515]};
+  /* inline custom properties that drive the .a entrance animation */
+  function dly(ms,dur,an){return ' style="--d:'+ms+'ms'+(dur?';--dur:'+dur+'s':'')+(an?';--an:'+an:'')+'"'}
+
+  function intro(){
+    app.innerHTML=steps('intro')+
+    '<div class="intro">'+
+      '<div class="card y title tilt-l a"'+dly(0,.34,'slapbig')+'><span class="scrawl">friends / family / crushes / chaos</span>'+
+        '<h1>Which type are you in a relationship?</h1></div>'+
+      '<div class="rules">'+
+        '<div class="card tilt-r a"'+dly(100,.26)+'><span class="n">8</span>quick situations. Tap the answer that is most like you.</div>'+
+        '<div class="card l a"'+dly(160,.26)+'><span class="n">0</span>wrong answers. Pick what you’d really do, not what sounds best.</div>'+
+        '<div class="card p tilt-l a"'+dly(220,.26)+'><span class="n">1</span>result to argue about with your partner.</div>'+
+      '</div>'+
+      '<div class="card note-card a"'+dly(280,.26)+'><p><span class="note">just for fun</span> This is a game, not a psychology test. Eight questions, four boxes, zero science. Nobody is only one type.</p></div>'+
+      '<div class="a"'+dly(340,.26,'rise')+'><button class="btn" id="go">Start</button></div>'+
+    '</div>';
+    document.getElementById('go').onclick=function(){S.screen='quiz';render()};
+  }
+
+  function quiz(){
+    var i=S.qi,Q=QUESTIONS[i],n=QUESTIONS.length;
+    /* the bar is drawn in the previous question's state, then moved on so the fill can transition */
+    function startCls(k){ if(i===0) return ''; if(k<i-1) return 'f'; if(k===i-1) return 'c'; return ''; }
+    var bar='<div class="bar" id="bar" aria-label="Question '+(i+1)+' of '+n+'">'+QUESTIONS.map(function(_,k){
+      return '<i class="'+startCls(k)+'"></i>';
+    }).join('')+'</div>';
+    var opts=S.order[i].map(function(t,idx){
+      return '<button class="opt a" data-t="'+t+'"'+dly(40+idx*35,.24)+'>'+Q.o[t]+'</button>';
+    }).join('');
+    app.innerHTML=steps('quiz')+bar+
+      '<div class="qhead"><div class="num a" style="clip-path:'+BURST+';--an:numpop;--d:80ms;--dur:.3s">'+(i+1)+'</div>'+
+      '<div class="card y qtext tilt-r a"'+dly(0,.28,'slide')+'><h2>'+Q.q+'</h2></div></div>'+
+      '<div class="opts" id="opts">'+opts+'</div>';
+    rafId=requestAnimationFrame(function(){rafId=requestAnimationFrame(function(){
+      rafId=null;
+      Array.prototype.forEach.call(app.querySelectorAll('#bar i'),function(el,k){
+        el.className=k<i?'f':(k===i?'c':'');
+      });
+    })});
+    var locked=false,optsEl=document.getElementById('opts');
+    Array.prototype.forEach.call(app.querySelectorAll('.opt'),function(btn){
+      btn.onclick=function(){
+        if(locked) return; locked=true;
+        optsEl.classList.add('locked');
+        btn.classList.add('pick');
+        var t=btn.getAttribute('data-t');
+        S.tally[t]++;S.history.push(t);
+        advanceT=setTimeout(function(){
+          advanceT=null;
+          if(S.qi<QUESTIONS.length-1){S.qi++}else{S.screen='result'}
+          render();window.scrollTo(0,0);
+        },320);
+      };
+    });
+  }
+
+  function result(){
+    var w=winner(),T=TYPES[w],total=QUESTIONS.length,st=STAMP[w];
+    var mix=ORDER.map(function(t,idx){
+      var n=S.tally[t],pct=Math.round(n/total*100);
+      return '<div class="row'+(t===w?' top':'')+'"><span>'+TYPES[t].name.replace('The ','')+'</span>'+
+        '<div class="track"><div class="fill a" style="width:'+pct+'%;--an:grow;--d:'+(760+idx*45)+'ms;--dur:.34s"></div></div><span>'+n+'/'+total+'</span></div>';
+    }).join('');
+    /* timeline (ms): card 0 / stamp 200 / title = landing+30 / text = landing+110 / side cards 660 / chips 760+ / bars 760+ / rest 840+ ; ends about 1.2s */
+    app.innerHTML=steps('result')+
+    '<div class="result">'+
+      '<div class="card y a"'+dly(0,.28)+'><div class="reveal'+(w==='ghost'?'':' thud')+'" style="--td:'+st[2]+'ms">'+
+        '<div class="stamp a" style="clip-path:'+BURST+';--an:'+st[0]+';--d:200ms;--dur:'+st[1]+'s">'+T.stamp+'</div>'+
+        '<div><span class="kicker a"'+dly(st[2],.24,'rise')+'>you are&hellip;</span><h1 class="a"'+dly(st[2]+30,.26,'rise')+'>'+T.name+'</h1><p class="a"'+dly(st[2]+110,.26,'rise')+'>'+T.line+'</p></div>'+
+      '</div></div>'+
+      '<div class="two">'+
+        '<div class="card tilt-l a"'+dly(660,.26)+'><h3>Your phrases</h3><div class="chips" style="margin-top:14px">'+
+          T.phrases.map(function(ph,i){return '<span class="chip a"'+dly(760+i*70,.24)+'>'+ph+'</span>'}).join('')+'</div>'+
+          '<p style="margin-top:16px;font-weight:700">Use each one in a sentence about a made-up situation or character.</p></div>'+
+        '<div class="card l mix tilt-r a"'+dly(680,.26)+'><h3>Your mix</h3>'+mix+'</div>'+
+      '</div>'+
+      '<div class="card p a"'+dly(840,.22,'rise')+'><p class="note">'+T.watch+'</p></div>'+
+      '<div class="card b a"'+dly(890,.22,'rise')+'><p style="font-weight:700;font-size:21px">Four boxes can’t hold a whole person. Find someone with a different type. Do you get on, or would you fall out?</p></div>'+
+      '<div class="nav a"'+dly(940,.22,'rise')+'><button class="btn small" id="again" style="box-shadow:6px 6px 0 var(--lime)">Retake</button><button class="btn" id="next">Red or green?</button></div>'+
+    '</div>';
+    document.getElementById('again').onclick=function(){resetQuiz();S.screen='quiz';render();window.scrollTo(0,0)};
+    document.getElementById('next').onclick=function(){S.screen='flags';S.fi=0;S.fscore=0;S.fanswered=null;render();window.scrollTo(0,0)};
+  }
+
+  function flags(){
+    var answered=S.fanswered!==null;
+    if(S.fi>=FLAGS.length){
+      app.innerHTML=steps('flags')+
+      '<div class="flagwrap"><div class="card l tilt-l a" style="text-align:center;--d:0ms;--dur:.3s">'+
+        '<span class="note">your flag radar</span>'+
+        '<div class="score a"'+dly(150,.4,'slapbig')+'>'+S.fscore+'/'+FLAGS.length+'</div>'+
+        '<p style="font-weight:700;margin-top:12px">Disagreed with any of them? Good. Save it for the pair talk.</p></div>'+
+        '<div class="nav a" style="margin:0;--an:rise;--d:400ms;--dur:.24s"><button class="btn" id="next">Pair talk</button></div></div>';
+      document.getElementById('next').onclick=function(){S.screen='talk';render();window.scrollTo(0,0)};
+      return;
+    }
+    var F=FLAGS[S.fi],fb='',motion='';
+    if(answered){
+      var ok=(S.fanswered===F.g);
+      fb='<span class="verdict '+(ok?'good':'bad')+'">'+(ok?'Yes. Most people say '+(F.g?'green':'red')+' flag.':'Not quite. Most people say '+(F.g?'green':'red')+' flag.')+'</span>'+F.why+
+         '<span class="challenge">'+(ok?'Would anyone argue the other way?':'But can you explain why you disagree?')+'</span>';
+      motion=F.g?' bounce':' shake';
+    }
+    app.innerHTML=steps('flags')+
+    '<div class="bar">'+FLAGS.map(function(_,k){return '<i class="'+(k<S.fi?'f':(k===S.fi?'c':''))+'"></i>'}).join('')+'</div>'+
+    '<div class="flagwrap">'+
+      '<div class="card y flagcard tilt-r'+(answered?motion:' a')+'"'+(answered?'':dly(0,.28))+'><small>red flag or green flag?</small>'+F.t+'</div>'+
+      (!answered
+        ? '<div class="flagbtns a"'+dly(100,.22,'rise')+'><button class="btn red" id="r">Red flag</button><button class="btn green" id="g">Green flag</button></div><div class="feedback"></div>'
+        : '<div class="card feedback a"'+dly(0,.26,'fbin')+'>'+fb+'</div><div class="a"'+dly(120,.22,'rise')+'><button class="btn alt" id="n">'+(S.fi===FLAGS.length-1?'See score':'Next')+'</button></div>')+
+    '</div>';
+    if(!answered){
+      document.getElementById('r').onclick=function(){answer(false)};
+      document.getElementById('g').onclick=function(){answer(true)};
+    }else{
+      document.getElementById('n').onclick=function(){S.fi++;S.fanswered=null;render();window.scrollTo(0,0)};
+    }
+    function answer(v){S.fanswered=v;if(v===F.g)S.fscore++;render()}
+  }
+
+  function fmt(s){var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r}
+
+  function talk(){
+    app.innerHTML=steps('talk')+
+    '<div class="talk">'+
+      '<div class="card p timer tilt-l a"'+dly(0,.28)+'><div><h2>Pair talk</h2><p style="font-weight:700;margin-top:8px">Take turns. Use at least three phrases from the bank. Prompts 1 and 2 first; 3 is an extension.</p></div>'+
+        '<div class="clock" id="clock">'+fmt(S.secs)+'</div>'+
+        '<div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn small" id="tgl">Start</button><button class="btn small alt" id="rst">Reset</button></div></div>'+
+      '<div class="prompts">'+PROMPTS.map(function(pr,i){
+        return '<div class="card prompt a"'+dly(100+i*70,.24,'rise')+'><div class="pn">'+(i+1)+'</div><div><h3>'+(pr.ext?'<span class="tag">Extension</span>':'')+pr.q+'</h3><div class="starters">'+
+          pr.s.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div></div></div>';
+      }).join('')+'</div>'+
+      '<div class="card b tilt-r a"'+dly(330,.26,'rise')+'><span class="tag" style="background:var(--lime);color:var(--ink)">Final takeaway</span><h2 style="margin-top:12px">What makes someone a good friend?</h2><p style="font-weight:700;font-size:21px;margin-top:12px">Give one quality, say why it matters, and use one phrase from the bank.</p></div>'+
+      '<div><h2 style="margin-bottom:18px">Phrase bank</h2><div class="bank">'+
+        BANK.map(function(w,i){return '<div class="word a"'+dly(380+Math.min(i*22,330),.22,'rise')+'><strong>'+w[0]+'</strong><span>'+w[1]+'</span></div>'}).join('')+'</div></div>'+
+      '<div class="nav" style="margin-top:0"><button class="btn small" id="restart">Back to start</button></div>'+
+    '</div>';
+    var clock=document.getElementById('clock'),tgl=document.getElementById('tgl');
+    function pulse(){clock.classList.remove('pulse');void clock.offsetWidth;clock.classList.add('pulse')}
+    function paint(){clock.textContent=fmt(S.secs);tgl.textContent=S.running?'Pause':(S.secs<=0?'Done':'Start')}
+    function tick(){
+      if(S.secs>0){S.secs--}
+      if(S.secs<=0){stopTimer();pulse()}
+      paint();
+    }
+    if(timerId){clearInterval(timerId);timerId=null}
+    if(S.running){timerId=setInterval(tick,1000)}
+    paint();
+    tgl.onclick=function(){
+      if(S.secs<=0) return;
+      if(S.running){stopTimer()}else{S.running=true;timerId=setInterval(tick,1000);pulse()}
+      paint();
+    };
+    document.getElementById('rst').onclick=function(){stopTimer();S.secs=360;paint()};
+    document.getElementById('restart').onclick=function(){stopTimer();S.secs=360;resetQuiz();S.screen='intro';render();window.scrollTo(0,0)};
+  }
+
+  function render(){
+    if(advanceT){clearTimeout(advanceT);advanceT=null}
+    if(rafId){cancelAnimationFrame(rafId);rafId=null}
+    if(S.screen!=='talk') stopTimer();
+    ({intro:intro,quiz:quiz,result:result,flags:flags,talk:talk})[S.screen]();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
